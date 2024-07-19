@@ -15,31 +15,35 @@ print("\n>>> Alice shares her public key with Bob <<<")
 
 # Bob Generates EC ElGamal keys
 print("\n>>> Bob generates a pair of EC ElGamal keys <<<")
+
 bob_private_key, bob_public_key = gen_keypair(curve)
 
 print("\n>>> Bob shares his public key with Alice <<<")
 
-# generates hex key (256 bit) and iv (64 bit) for Cast256 CBC
+# generates hex key (256 bit) and iv (128 bit) for Cast256 CBC
 print("\n>>> Alice generates private cast256-CBC key and IV <<<")
 key = random.getrandbits(256)
-iv = hex(random.getrandbits(64))[2:]
+iv = hex(random.getrandbits(128))[2:]
 
 # Conceptual placeholder for encrypting the CAST256 key and IV with Bob's public key
-print("\n>>> Alice encrypts cast256-CBC key and IV using EC ElGamal with Bob's public key <<<")
+# In reality, this step requires proper formatting of (key, iv) to be compatible with EC ElGamal encryption
+print("\n>>> Alice encrypts cast256-CBC key and IV using EC ElGamal with Bob's public key <<< ")
+# This is a conceptual step - in practice, you need to convert (key, iv) to a suitable format for encryption
+# For demonstration purposes only
 encrypted_key_iv = ec_elgamal_encrypt(bob_public_key, key, curve)
 
 while True:
-    Alice_login=input("Please Alice enter the password of dataset:  ")
-    if(Alice_login != pass_of_dataset):
+    Alice_login = input("Please Alice enter the password of dataset:  ")
+    if Alice_login != pass_of_dataset:
         print("Password not valid try again please!!")
     else:
         break
-
-print("\n>>> Alice sends encrypted image to Bob with encrypted key and IV to Bob <<<")    
+    
+print("\n>>> Alice sends encrypted image to Bob with encrypted key and IV <<<")    
 image_path = input("Enter the path to the image (make sure without apostrophes): ")
 with open(image_path, 'rb') as image_file:
     image_data = image_file.read()
-print("\n>>> Please wait until Alice finishes the Encryption step <<<")
+print("\n>>> Please wait until Alice finishes Encryption step <<<")
 
 image = base64.b64encode(image_data).decode('utf-8')
 hex_key = hex(key)[2:]
@@ -52,17 +56,20 @@ with open(encrypted_image_path, 'wb') as encrypted_image_file:
 print(f"\n>>> Encrypted image saved to {encrypted_image_path} <<<")
 
 while True:
-    Bob_login=input("Please Bob enter the password of dataset: ")
-    if(Bob_login != pass_of_dataset):
+    Bob_login = input("Please Bob enter the password of dataset: ")
+    if Bob_login != pass_of_dataset:
         print("Password not valid try again please!!")
     else:
         break
-
+    
 # Conceptual placeholder for Bob decrypting the CAST256 key and IV with his private key
 print("\n>>> Bob decrypts the CAST256 key and IV using EC ElGamal with his private key <<<")
+# In reality, this step requires converting the decrypted result back into the original (key, iv) format
+# For demonstration purposes only
 decrypted_key_iv = ec_elgamal_decrypt(bob_private_key, encrypted_key_iv, curve)
 
 # Assuming decrypted_key_iv somehow gives us access to the original key and IV
+# This part of the code is conceptual and needs to be adjusted according to your actual implementation
 decrypted_key = hex_key  # Placeholder for the actual decrypted key
 decrypted_iv = iv        # Placeholder for the actual decrypted IV
 
@@ -81,7 +88,4 @@ mac_key, mac = generate_mac(image)
 print(f"\nMAC for the original image: {mac}\n")
 
 # Securely transmit mac_key to Bob along with the encrypted image and keys
-decrypted_image_base64 = base64.b64encode(decrypted_image_data).decode('utf-8')
-
-# Verify the MAC for the base64-encoded decrypted image
-verify_mac(decrypted_image_base64, mac, mac_key)
+decrypted_image_base64 = base64.b64encode(de
